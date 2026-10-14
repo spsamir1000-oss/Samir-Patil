@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "student": {
+      "title": "student",
+      "description": "Represents a student enrolled in a school",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "school": { "type": "string" },
+        "std": { "type": "string" },
+        "div": { "type": "string" },
+        "gender": { "type": "string" },
+        "medium": { "type": "string" }
+      },
+      "required": ["id", "name", "school", "std", "div"]
+    },
+    "attendanceRecord": {
+      "title": "attendanceRecord",
+      "description": "Represents a single daily attendance record for a student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "school": { "type": "string" },
+        "std": { "type": "string" },
+        "div": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["Present", "Absent", "Holiday", "Leave"] }
+      },
+      "required": ["id", "studentId", "studentName", "school", "std", "div", "date", "status"]
+    },
+    "interventionTask": {
+      "title": "interventionTask",
+      "description": "Represents an intervention action for a chronically absent student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "school": { "type": "string" },
+        "std": { "type": "string" },
+        "div": { "type": "string" },
+        "dateCreated": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "home_visit_done", "completed", "active_task", "unsuccessful", "successful"] },
+        "homeVisitPhotoUrl": { "type": "string" },
+        "homeVisitNotes": { "type": "string" },
+        "homeVisitDate": { "type": "string" },
+        "homeVisitBy": { "type": "string" },
+        "schoolReturnPhotoUrl": { "type": "string" },
+        "schoolReturnDate": { "type": "string" },
+        "completedDate": { "type": "string" },
+        "schoolReturnBy": { "type": "string" },
+        "taskGroupId": { "type": "string" },
+        "visitDate": { "type": "string" },
+        "visitResult": { "type": "string" },
+        "unsuccessfulReason": { "type": "string" },
+        "actualPresentDate": { "type": "string" }
+      },
+      "required": ["id", "studentId", "studentName", "school", "std", "div", "dateCreated", "status"]
+    },
+    "communityTaskGroup": {
+      "title": "communityTaskGroup",
+      "description": "Represents a group of intervention tasks managed by the community",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "dateCreated": { "type": "string" },
+        "conditionsUsed": { "type": "string" },
+        "studentIds": { "type": "array" }
+      },
+      "required": ["id", "title", "dateCreated", "conditionsUsed", "studentIds"]
+    },
+    "teacher": {
+      "title": "teacher",
+      "description": "Represents a registered teacher/user with access controls",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "password": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "manager", "teacher", "academic_coordinator", "community_member"] },
+        "allowedSchools": { "type": "array" },
+        "types": { "type": "array" }
+      },
+      "required": ["id", "name", "role", "allowedSchools"]
+    },
+    "syncConfig": {
+      "title": "syncConfig",
+      "description": "Cloud Sheets external integration configuration",
+      "type": "object",
+      "properties": {
+        "appsScriptUrl": { "type": "string" },
+        "oneDriveUrl": { "type": "string" },
+        "syncTarget": { "type": "string" },
+        "isAutoSyncEnabled": { "type": "boolean" },
+        "lastSyncedAt": { "type": "string" },
+        "lastOneDriveSyncedAt": { "type": "string" }
+      },
+      "required": ["appsScriptUrl", "isAutoSyncEnabled"]
+    },
+    "rolePermissions": {
+      "title": "rolePermissions",
+      "description": "Feature authorization levels for system roles",
+      "type": "object",
+      "properties": {
+        "admin": { "type": "object" },
+        "manager": { "type": "object" },
+        "academic_coordinator": { "type": "object" },
+        "community_member": { "type": "object" },
+        "teacher": { "type": "object" }
+      },
+      "required": ["admin", "manager", "academic_coordinator", "community_member", "teacher"]
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/student" },
+      "description": "Student roster profile collection"
+    },
+    "/attendance_records/{recordId}": {
+      "schema": { "$ref": "#/entities/attendanceRecord" },
+      "description": "Chronological student attendance marks"
+    },
+    "/intervention_tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/interventionTask" },
+      "description": "Assigned intervention tracking actions"
+    },
+    "/community_task_groups/{groupId}": {
+      "schema": { "$ref": "#/entities/communityTaskGroup" },
+      "description": "Task bunches clustered for community interaction"
+    },
+    "/teachers/{teacherId}": {
+      "schema": { "$ref": "#/entities/teacher" },
+      "description": "Teacher logins and credentials registry"
+    },
+    "/settings/sync_config": {
+      "schema": { "$ref": "#/entities/syncConfig" },
+      "description": "Single-document configuration for Google Sheets syncing"
+    },
+    "/settings/role_permissions": {
+      "schema": { "$ref": "#/entities/rolePermissions" },
+      "description": "Single-document role permissions state"
+    }
+  }
+}

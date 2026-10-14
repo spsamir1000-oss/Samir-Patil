@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net catches all unspecified routes and denies by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Authentication guard
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Validations for student entry
+    function isValidStudent(data) {
+      return data.id is string 
+        && data.name is string 
+        && data.school is string 
+        && data.std is string 
+        && data.div is string;
+    }
+
+    // Validations for attendance record
+    function isValidAttendance(data) {
+      return data.id is string
+        && data.studentId is string
+        && data.studentName is string
+        && data.school is string
+        && data.std is string
+        && data.div is string
+        && data.date is string
+        && data.status is string;
+    }
+
+    // Rules for Student collection
+    match /students/{studentId} {
+      allow read: if true;
+      allow create, update: if isValidStudent(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Rules for Attendance Records collection
+    match /attendance_records/{recordId} {
+      allow read: if true;
+      allow create, update: if isValidAttendance(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Rules for Intervention Tasks
+    match /intervention_tasks/{taskId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if true;
+    }
+
+    // Rules for Community Task Groups
+    match /community_task_groups/{groupId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Rules for Teachers List
+    match /teachers/{teacherId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Settings paths
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
